@@ -12,6 +12,7 @@ using OsmSharp.Math.Geo;
 using OsmSharp.UI.Map;
 using OsmSharp.UI.Map.Layers;
 
+
 namespace App1
 {
     [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@mipmap/ic_launcher")]
@@ -19,14 +20,16 @@ namespace App1
     {
         MapView _mapView;
         Layer _mapLayer;
-
+        
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
 
             Native.Initialize();
-            
+           
+
+
             _mapView = new MapView(this, new MapViewSurface(this));
             _mapView.MapTilt = 0;
             _mapView.MapCenter = new GeoCoordinate(53.770226, 20.490189);
@@ -34,6 +37,7 @@ namespace App1
             _mapView.Map = new Map();
             _mapView.MapAllowZoom = true;
             _mapLayer = _mapView.Map.AddLayerTile("http://a.tile.openstreetmap.de/tiles/osmde/{0}/{1}/{2}.png");
+            _mapView.MapTapEvent += MapViewTapEvent;
 
             using (var bitmap = BitmapFactory.DecodeResource(Resources, Resource.Drawable.pin))
             {
@@ -42,6 +46,17 @@ namespace App1
             }
             var layout = FindViewById<RelativeLayout>(Resource.Id.Mapka);
             layout.AddView(_mapView);
+        }
+
+        private void MapViewTapEvent(GeoCoordinate coordinate)
+        {
+            using (var bitmap = BitmapFactory.DecodeResource(Resources, Resource.Drawable.pin))
+            {
+                var marker = new MapMarker(this, coordinate, MapMarkerAlignmentType.CenterBottom, bitmap);
+                _mapView.AddMarker(marker);
+            }
+
+
         }
 
         [Java.Interop.Export("Goto")]
